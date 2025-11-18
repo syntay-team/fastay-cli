@@ -1,7 +1,7 @@
 {
   "name": "fastay",
   "description": "Linha de comando (CLI) para criar e gerenciar projetos backend modernos com Fastay.js,",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "type": "module",
   "bin": {
     "fastay": "./bin/fastay.js"

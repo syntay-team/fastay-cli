@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "fastay dev",
-    "dev:watch": "fastay dev:watch",
-    "build": "fastay build",
-    "start": "fastay start",
+    "dev": "npx fastay dev",
+    "dev:watch": "npx fastay dev:watch",
+    "build": "npx fastay build",
+    "start": "npx fastay start",
     "lint": "eslint 'src/**/*.{js, jsx}' --fix"
   },
   "dependencies": {

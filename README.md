@@ -1,5 +1,3 @@
----
-
 # 🚀 Fastay CLI
 
 `fastay` é uma ferramenta de linha de comando (CLI) para criar e gerenciar projetos backend modernos com **Fastay.js**, permitindo gerar rapidamente aplicações configuradas com TypeScript, ORMs e muito mais.

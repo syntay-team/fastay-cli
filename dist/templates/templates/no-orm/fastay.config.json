@@ -1,0 +1,9 @@
+{
+  "entry": "src/index.ts",
+  "outDir": "dist",
+  "routesDir": "src/routes",
+  "compiler": {
+    "minify": false,
+    "target": "es2020"
+  }
+}

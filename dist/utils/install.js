@@ -76,7 +76,7 @@ export function installDependencies(projectDir, orm, database, typescript, name)
                     // if (database === "mysql") deps.push("mysql2");
                     // if (database === "sqlite") deps.push("better-sqlite3");
                     _a.sent();
-                    return [4 /*yield*/, run("npm install -g fastay ".concat(deps.join(' ')), projectDir)];
+                    return [4 /*yield*/, run("npm install -g fastay", projectDir)];
                 case 2:
                     _a.sent();
                     return [4 /*yield*/, run("npm install -g tsx ".concat(deps.join(' ')), projectDir)];

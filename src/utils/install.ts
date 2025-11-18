@@ -41,6 +41,7 @@ export async function installDependencies(
   // if (database === "sqlite") deps.push("better-sqlite3");
   await updatePackageJson(projectDir, name);
 
+  await run(`npm install -g fastay ${deps.join(' ')}`, projectDir);
   await run(`npm install -g tsx ${deps.join(' ')}`, projectDir);
   await run(`npm install ${deps.join(' ')}`, projectDir);
   if (devDeps.length > 0)

@@ -11,7 +11,7 @@
     "lint": "eslint 'src/**/*.{js, jsx}' --fix"
   },
   "dependencies": {
-    "@syntay/fastay": "0.1.2",
+    "@syntay/fastay": "^0.1.2",
     "dotenv": "^17.2.3",
     "globals": "^16.5.0"
   },

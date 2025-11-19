@@ -76,21 +76,18 @@ export function installDependencies(projectDir, orm, database, typescript, name)
                     // if (database === "mysql") deps.push("mysql2");
                     // if (database === "sqlite") deps.push("better-sqlite3");
                     _a.sent();
-                    return [4 /*yield*/, run("npm install -g fastay", projectDir)];
+                    return [4 /*yield*/, run("npm install -g fastay tsx", projectDir)];
                 case 2:
                     _a.sent();
-                    return [4 /*yield*/, run("npm install -g tsx ".concat(deps.join(' ')), projectDir)];
+                    return [4 /*yield*/, run("npm install ".concat(deps.join(' ')), projectDir)];
                 case 3:
                     _a.sent();
-                    return [4 /*yield*/, run("npm install ".concat(deps.join(' ')), projectDir)];
+                    if (!(devDeps.length > 0)) return [3 /*break*/, 5];
+                    return [4 /*yield*/, run("npm install -D ".concat(devDeps.join(' ')), projectDir)];
                 case 4:
                     _a.sent();
-                    if (!(devDeps.length > 0)) return [3 /*break*/, 6];
-                    return [4 /*yield*/, run("npm install -D ".concat(devDeps.join(' ')), projectDir)];
-                case 5:
-                    _a.sent();
-                    _a.label = 6;
-                case 6: return [2 /*return*/];
+                    _a.label = 5;
+                case 5: return [2 /*return*/];
             }
         });
     });

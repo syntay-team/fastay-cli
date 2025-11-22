@@ -1,71 +1,94 @@
-import fs from "node:fs";
-import path from "node:path";
-// pasta onde o build final foi colocado
-var ROOT = process.argv[2]
-    ? path.resolve(process.argv[2])
-    : (function () {
-        console.error("❌ No dist path provided to post-build-fix");
-        process.exit(1);
-    })();
-// extensões que tentaremos resolver ao final dos imports
-var TRY_EXTS = [".js", ".json", ".mjs", ".cjs"];
-console.log("🔧 Running post-build import fix...");
+import fs from 'node:fs';
+import path from 'node:path';
+var ROOT = process.argv[2];
+if (!ROOT) {
+    console.error('❌ No dist path provided');
+    process.exit(1);
+}
+console.log('🔧 RUNNING POST-BUILD FIX...');
 /**
- * Tenta resolver o caminho correto do import adicionando extensões como .js
+ * Calcula quantos níveis precisamos voltar para chegar na raiz do dist
  */
-function resolveImport(importPath, fileDir) {
-    // já tem extensão => não mexer
-    if (path.extname(importPath))
-        return null;
-    var base = path.resolve(fileDir, importPath);
-    for (var _i = 0, TRY_EXTS_1 = TRY_EXTS; _i < TRY_EXTS_1.length; _i++) {
-        var ext = TRY_EXTS_1[_i];
-        if (fs.existsSync(base + ext))
-            return importPath + ext;
-        var indexFile = path.join(base, "index" + ext);
-        if (fs.existsSync(indexFile)) {
-            return path.join(importPath, "index" + ext);
-        }
+function calculateRelativeDepth(filePath) {
+    var relativePath = path.relative(ROOT, path.dirname(filePath));
+    var depth = relativePath.split(path.sep).length;
+    if (depth === 0)
+        return './';
+    var relativePrefix = '';
+    for (var i = 0; i < depth; i++) {
+        relativePrefix += '../';
     }
-    return null;
+    return relativePrefix;
 }
 /**
- * Processa um arquivo .js e corrige imports sem extensão
+ * Converte alias @/ para caminho relativo CORRETO baseado na profundidade
  */
-function processFile(filePath) {
-    var code = fs.readFileSync(filePath, "utf8");
-    var dir = path.dirname(filePath);
-    var importRegex = /from\s+["'](\.{1,2}\/[^"']*)["']/g;
-    var changed = false;
-    code = code.replace(importRegex, function (full, rawImport) {
-        var fixed = resolveImport(rawImport, dir);
-        if (fixed) {
-            changed = true;
-            return full.replace(rawImport, fixed);
+function convertAlias(importPath, filePath) {
+    if (importPath.startsWith('@/')) {
+        var withoutAlias = importPath.slice(2); // Remove '@/'
+        var relativePrefix = calculateRelativeDepth(filePath);
+        // Para imports de arquivos (como lib/auth/profissional)
+        if (withoutAlias.endsWith('.js') || withoutAlias.includes('/')) {
+            return "".concat(relativePrefix).concat(withoutAlias);
         }
-        return full;
+        // Para imports de diretórios (como utils/db)
+        return "".concat(relativePrefix).concat(withoutAlias, "/index.js");
+    }
+    return importPath;
+}
+function processFile(filePath) {
+    var content = fs.readFileSync(filePath, 'utf8');
+    var changed = false;
+    // Regex para capturar imports com alias
+    var aliasRegex = /from\s+["'](@\/[^"']*)["']/g;
+    content = content.replace(aliasRegex, function (match, importPath) {
+        var convertedPath = convertAlias(importPath, filePath);
+        if (convertedPath !== importPath) {
+            changed = true;
+            console.log("  \uD83D\uDCCD ".concat(path.relative(ROOT, filePath), ": ").concat(importPath, " \u2192 ").concat(convertedPath));
+            return "from \"".concat(convertedPath, "\"");
+        }
+        return match;
+    });
+    // Também corrige imports relativos sem extensão
+    var relativeRegex = /from\s+["'](\.\.?\/[^"']*)["']/g;
+    content = content.replace(relativeRegex, function (match, importPath) {
+        if (!path.extname(importPath)) {
+            var fullImportPath = path.resolve(path.dirname(filePath), importPath);
+            // Verifica se é arquivo .js
+            if (fs.existsSync(fullImportPath + '.js')) {
+                changed = true;
+                return "from \"".concat(importPath, ".js\"");
+            }
+            // Verifica se é diretório com index.js
+            if (fs.existsSync(fullImportPath) &&
+                fs.statSync(fullImportPath).isDirectory()) {
+                if (fs.existsSync(path.join(fullImportPath, 'index.js'))) {
+                    changed = true;
+                    return "from \"".concat(path.join(importPath, 'index.js'), "\"");
+                }
+            }
+        }
+        return match;
     });
     if (changed) {
-        fs.writeFileSync(filePath, code, "utf8");
-        console.log("✔ Fixed:", filePath);
+        fs.writeFileSync(filePath, content, 'utf8');
     }
 }
-/**
- * Percorre diretórios recursivamente
- */
 function walk(dir) {
-    for (var _i = 0, _a = fs.readdirSync(dir); _i < _a.length; _i++) {
-        var entry = _a[_i];
-        var fullPath = path.join(dir, entry);
-        var stat = fs.lstatSync(fullPath);
+    var files = fs.readdirSync(dir);
+    for (var _i = 0, files_1 = files; _i < files_1.length; _i++) {
+        var file = files_1[_i];
+        var fullPath = path.join(dir, file);
+        var stat = fs.statSync(fullPath);
         if (stat.isDirectory()) {
             walk(fullPath);
         }
-        else if (fullPath.endsWith(".js")) {
+        else if (file.endsWith('.js')) {
             processFile(fullPath);
         }
     }
 }
-// inicia a varredura
+console.log("\uD83D\uDD27 Processing: ".concat(ROOT));
 walk(ROOT);
-console.log("✓ Import fix completed.");
+console.log('✅ POST-BUILD FIX COMPLETED');

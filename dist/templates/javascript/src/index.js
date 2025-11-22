@@ -1,4 +1,5 @@
 import { createApp } from '@syntay/fastay';
+import 'dotenv/config';
 
 const port = 5000;
 

@@ -1,0 +1,9 @@
+{
+  "outDir": "dist",
+  "routesDir": "src/api",
+  "compiler": {
+    "target": "es2020",
+    "treeShaking": true,
+    "legalComments": "none"
+  }
+}

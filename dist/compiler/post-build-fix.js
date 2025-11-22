@@ -1,11 +1,13 @@
+// compiler/post-build-fix.ts
 import fs from 'node:fs';
 import path from 'node:path';
+import chalk from 'chalk';
 var ROOT = process.argv[2];
 if (!ROOT) {
-    console.error('❌ No dist path provided');
+    console.log(chalk.red('✗ No dist path provided to post-build-fix'));
     process.exit(1);
 }
-console.log('🔧 RUNNING POST-BUILD FIX...');
+console.log(chalk.blue('🔧') + chalk.gray(" ") + 'Running import fix...');
 /**
  * Calcula quantos níveis precisamos voltar para chegar na raiz do dist
  */
@@ -39,13 +41,18 @@ function convertAlias(importPath, filePath) {
 function processFile(filePath) {
     var content = fs.readFileSync(filePath, 'utf8');
     var changed = false;
-    // Regex para capturar imports com alias
     var aliasRegex = /from\s+["'](@\/[^"']*)["']/g;
     content = content.replace(aliasRegex, function (match, importPath) {
         var convertedPath = convertAlias(importPath, filePath);
         if (convertedPath !== importPath) {
             changed = true;
-            console.log("  \uD83D\uDCCD ".concat(path.relative(ROOT, filePath), ": ").concat(importPath, " \u2192 ").concat(convertedPath));
+            var relativeFile = path.relative(ROOT, filePath);
+            console.log('  ' +
+                chalk.magenta('↳') +
+                chalk.gray(" ".concat(relativeFile, ": ")) +
+                chalk.red(importPath) +
+                ' → ' +
+                chalk.green(convertedPath));
             return "from \"".concat(convertedPath, "\"");
         }
         return match;
@@ -89,6 +96,5 @@ function walk(dir) {
         }
     }
 }
-console.log("\uD83D\uDD27 Processing: ".concat(ROOT));
 walk(ROOT);
-console.log('✅ POST-BUILD FIX COMPLETED');
+console.log(chalk.green('✓ ') + 'Import fix completed');

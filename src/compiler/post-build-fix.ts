@@ -1,13 +1,15 @@
+// compiler/post-build-fix.ts
 import fs from 'node:fs';
 import path from 'node:path';
+import chalk from 'chalk';
 
 const ROOT = process.argv[2];
 if (!ROOT) {
-  console.error('❌ No dist path provided');
+  console.log(chalk.red('✗ No dist path provided to post-build-fix'));
   process.exit(1);
 }
 
-console.log('🔧 RUNNING POST-BUILD FIX...');
+console.log(chalk.blue('🔧') + chalk.gray(` `) + 'Running import fix...');
 
 /**
  * Calcula quantos níveis precisamos voltar para chegar na raiz do dist
@@ -50,7 +52,6 @@ function processFile(filePath: string) {
   let content = fs.readFileSync(filePath, 'utf8');
   let changed = false;
 
-  // Regex para capturar imports com alias
   const aliasRegex = /from\s+["'](@\/[^"']*)["']/g;
 
   content = content.replace(aliasRegex, (match, importPath) => {
@@ -58,11 +59,14 @@ function processFile(filePath: string) {
 
     if (convertedPath !== importPath) {
       changed = true;
+      const relativeFile = path.relative(ROOT, filePath);
       console.log(
-        `  📍 ${path.relative(
-          ROOT,
-          filePath
-        )}: ${importPath} → ${convertedPath}`
+        '  ' +
+          chalk.magenta('↳') +
+          chalk.gray(` ${relativeFile}: `) +
+          chalk.red(importPath) +
+          ' → ' +
+          chalk.green(convertedPath)
       );
       return `from "${convertedPath}"`;
     }
@@ -117,6 +121,5 @@ function walk(dir: string) {
   }
 }
 
-console.log(`🔧 Processing: ${ROOT}`);
 walk(ROOT);
-console.log('✅ POST-BUILD FIX COMPLETED');
+console.log(chalk.green('✓ ') + 'Import fix completed');

@@ -17,28 +17,28 @@ var Logger = /** @class */ (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        console.log.apply(console, __spreadArray([chalk.blue('ℹ ') + chalk.white(message)], args, false));
+        console.log.apply(console, __spreadArray([chalk.blue('  ○ ') + chalk.white(message)], args, false));
     };
     Logger.success = function (message) {
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        console.log.apply(console, __spreadArray([chalk.green('✓ ') + chalk.white(message)], args, false));
+        console.log.apply(console, __spreadArray([chalk.green('  ✓ ') + chalk.white(message)], args, false));
     };
     Logger.warning = function (message) {
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        console.log.apply(console, __spreadArray([chalk.yellow('⚠ ') + chalk.white(message)], args, false));
+        console.log.apply(console, __spreadArray([chalk.yellow('  ⚠ ') + chalk.white(message)], args, false));
     };
     Logger.error = function (message) {
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        console.log.apply(console, __spreadArray([chalk.red('✗ ') + chalk.white(message)], args, false));
+        console.log.apply(console, __spreadArray([chalk.red('  ✗ ') + chalk.white(message)], args, false));
     };
     Logger.debug = function (message) {
         var args = [];
@@ -46,7 +46,7 @@ var Logger = /** @class */ (function () {
             args[_i - 1] = arguments[_i];
         }
         if (process.env.DEBUG) {
-            console.log.apply(console, __spreadArray([chalk.magenta('🔧 ') + chalk.white(message)], args, false));
+            console.log.apply(console, __spreadArray([chalk.magenta('  🔧 ') + chalk.white(message)], args, false));
         }
     };
     Logger.start = function (message) {
@@ -54,7 +54,7 @@ var Logger = /** @class */ (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        console.log.apply(console, __spreadArray([chalk.cyan('⥨ ') + chalk.white(message)], args, false));
+        console.log.apply(console, __spreadArray([chalk.cyan('  ⥨ ') + chalk.white(message)], args, false));
     };
     Logger.route = function (method, path) {
         var methodColor = {
@@ -67,14 +67,14 @@ var Logger = /** @class */ (function () {
             HEAD: chalk.gray,
         }[method] || chalk.white;
         console.log('  ' +
-            chalk.green('✓ ') +
+            chalk.green('  ✓ ') +
             ' Route: ' +
             methodColor("[".concat(method, "]")) +
             ' ' +
             chalk.cyan(path));
     };
-    Logger.buildStep = function (step, message) {
-        console.log(chalk.blue('○ ') + chalk.white(step) + ' ' + chalk.gray(message));
+    Logger.buildStep = function (message) {
+        console.log(chalk.blue('  ○ ') + chalk.white(message));
     };
     return Logger;
 }());

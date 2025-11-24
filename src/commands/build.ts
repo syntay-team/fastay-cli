@@ -82,7 +82,7 @@ export async function buildProject(config: FastayConfig, root: string) {
     const projectEslintConfig = path.join(root, 'eslint.config.mjs');
 
     if (fs.existsSync(projectEslint) && fs.existsSync(projectEslintConfig)) {
-      Logger.buildStep('LINT', 'Running ESLint...');
+      Logger.buildStep('Running ESLint...');
       execSync(
         `"${projectEslint}" --fix -c "${projectEslintConfig}" "${path.join(
           root,
@@ -101,7 +101,7 @@ export async function buildProject(config: FastayConfig, root: string) {
   // 2) ───── TYPE CHECK (tsc --noEmit)
   if (whatLanguage === 'ts') {
     try {
-      Logger.buildStep('TYPE CHECK', 'Checking TypeScript types...');
+      Logger.buildStep('Checking TypeScript types...');
       execSync('npx tsc --noEmit', { cwd: root, stdio: 'inherit' });
     } catch {
       Logger.error('TypeScript errors detected. Build aborted.');
@@ -110,7 +110,7 @@ export async function buildProject(config: FastayConfig, root: string) {
   }
 
   // 3) ───── Limpar build anterior
-  Logger.buildStep('CLEAN', 'Removing previous build...');
+  Logger.buildStep('Removing previous build...');
   fs.rmSync(outDir, { recursive: true, force: true });
   fs.mkdirSync(outDir, { recursive: true });
 
@@ -125,17 +125,18 @@ export async function buildProject(config: FastayConfig, root: string) {
   }
 
   // 5) ───── Compilar com esbuild
-  Logger.buildStep('DISCOVER', 'Discovering source files...');
+  Logger.buildStep('Discovering source files...');
   const files = await glob('src/**/*.' + whatLanguage, { cwd: root });
   Logger.info(`Found ${files.length} source files`);
 
-  Logger.buildStep('BUILD', 'Creating an optimized production build ...');
+  Logger.buildStep('Creating an optimized production build ...');
   await esbuild.build({
     entryPoints: files.map((f) => path.join(root, f)),
     outbase: path.join(root, 'src'),
     outdir: outDir,
     bundle: false,
     format: 'esm',
+    minify: true,
     platform: 'node',
     resolveExtensions: whatLanguage === 'ts' ? ['.ts', '.js'] : ['.js'],
     sourcemap: true,
@@ -156,7 +157,7 @@ export async function buildProject(config: FastayConfig, root: string) {
   }
 
   // 7) ───── Corrigir imports (AGORA ESSA É A PARTE MAIS IMPORTANTE)
-  Logger.buildStep('FIX', 'Running import fix...');
+  Logger.buildStep('Running import fix...');
   const fixScript = path.join(__dirname, '../compiler/post-build-fix.js');
   execSync(`node ${fixScript} ${outDir}`, { stdio: 'inherit' });
 

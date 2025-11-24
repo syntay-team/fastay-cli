@@ -103,7 +103,7 @@ export function buildProject(config, root) {
                         projectEslint = path.join(root, 'node_modules/.bin/eslint');
                         projectEslintConfig = path.join(root, 'eslint.config.mjs');
                         if (fs.existsSync(projectEslint) && fs.existsSync(projectEslintConfig)) {
-                            Logger.buildStep('LINT', 'Running ESLint...');
+                            Logger.buildStep('Running ESLint...');
                             execSync("\"".concat(projectEslint, "\" --fix -c \"").concat(projectEslintConfig, "\" \"").concat(path.join(root, 'src'), "\""), { stdio: 'inherit' });
                             Logger.success('ESLint completed successfully.');
                         }
@@ -117,7 +117,7 @@ export function buildProject(config, root) {
                     // 2) ───── TYPE CHECK (tsc --noEmit)
                     if (whatLanguage === 'ts') {
                         try {
-                            Logger.buildStep('TYPE CHECK', 'Checking TypeScript types...');
+                            Logger.buildStep('Checking TypeScript types...');
                             execSync('npx tsc --noEmit', { cwd: root, stdio: 'inherit' });
                         }
                         catch (_l) {
@@ -126,7 +126,7 @@ export function buildProject(config, root) {
                         }
                     }
                     // 3) ───── Limpar build anterior
-                    Logger.buildStep('CLEAN', 'Removing previous build...');
+                    Logger.buildStep('Removing previous build...');
                     fs.rmSync(outDir, { recursive: true, force: true });
                     fs.mkdirSync(outDir, { recursive: true });
                     aliases = {};
@@ -139,18 +139,19 @@ export function buildProject(config, root) {
                         }
                     }
                     // 5) ───── Compilar com esbuild
-                    Logger.buildStep('DISCOVER', 'Discovering source files...');
+                    Logger.buildStep('Discovering source files...');
                     return [4 /*yield*/, glob('src/**/*.' + whatLanguage, { cwd: root })];
                 case 1:
                     files = _j.sent();
                     Logger.info("Found ".concat(files.length, " source files"));
-                    Logger.buildStep('BUILD', 'Creating an optimized production build ...');
+                    Logger.buildStep('Creating an optimized production build ...');
                     return [4 /*yield*/, esbuild.build({
                             entryPoints: files.map(function (f) { return path.join(root, f); }),
                             outbase: path.join(root, 'src'),
                             outdir: outDir,
                             bundle: false,
                             format: 'esm',
+                            minify: true,
                             platform: 'node',
                             resolveExtensions: whatLanguage === 'ts' ? ['.ts', '.js'] : ['.js'],
                             sourcemap: true,
@@ -171,7 +172,7 @@ export function buildProject(config, root) {
                         }
                     }
                     // 7) ───── Corrigir imports (AGORA ESSA É A PARTE MAIS IMPORTANTE)
-                    Logger.buildStep('FIX', 'Running import fix...');
+                    Logger.buildStep('Running import fix...');
                     fixScript = path.join(__dirname, '../compiler/post-build-fix.js');
                     execSync("node ".concat(fixScript, " ").concat(outDir), { stdio: 'inherit' });
                     tempDir = path.join(root, '.fastay-temp');

@@ -3,29 +3,29 @@ import chalk from 'chalk';
 
 export class Logger {
   static info(message: string, ...args: any[]) {
-    console.log(chalk.blue('ℹ ') + chalk.white(message), ...args);
+    console.log(chalk.blue('  ○ ') + chalk.white(message), ...args);
   }
 
   static success(message: string, ...args: any[]) {
-    console.log(chalk.green('✓ ') + chalk.white(message), ...args);
+    console.log(chalk.green('  ✓ ') + chalk.white(message), ...args);
   }
 
   static warning(message: string, ...args: any[]) {
-    console.log(chalk.yellow('⚠ ') + chalk.white(message), ...args);
+    console.log(chalk.yellow('  ⚠ ') + chalk.white(message), ...args);
   }
 
   static error(message: string, ...args: any[]) {
-    console.log(chalk.red('✗ ') + chalk.white(message), ...args);
+    console.log(chalk.red('  ✗ ') + chalk.white(message), ...args);
   }
 
   static debug(message: string, ...args: any[]) {
     if (process.env.DEBUG) {
-      console.log(chalk.magenta('🔧 ') + chalk.white(message), ...args);
+      console.log(chalk.magenta('  🔧 ') + chalk.white(message), ...args);
     }
   }
 
   static start(message: string, ...args: any[]) {
-    console.log(chalk.cyan('⥨ ') + chalk.white(message), ...args);
+    console.log(chalk.cyan('  ⥨ ') + chalk.white(message), ...args);
   }
 
   static route(method: string, path: string) {
@@ -42,7 +42,7 @@ export class Logger {
 
     console.log(
       '  ' +
-        chalk.green('✓ ') +
+        chalk.green('  ✓ ') +
         ' Route: ' +
         methodColor(`[${method}]`) +
         ' ' +
@@ -50,9 +50,7 @@ export class Logger {
     );
   }
 
-  static buildStep(step: string, message: string) {
-    console.log(
-      chalk.blue('○ ') + chalk.white(step) + ' ' + chalk.gray(message)
-    );
+  static buildStep(message: string) {
+    console.log(chalk.blue('  ○ ') + chalk.white(message));
   }
 }

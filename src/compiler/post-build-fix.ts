@@ -1,4 +1,3 @@
-// compiler/post-build-fix.ts
 import fs from 'node:fs';
 import path from 'node:path';
 import chalk from 'chalk';
@@ -52,7 +51,7 @@ function processFile(filePath: string) {
   let content = fs.readFileSync(filePath, 'utf8');
   let changed = false;
 
-  const aliasRegex = /from\s+["'](@\/[^"']*)["']/g;
+  const aliasRegex = /from\s*["'](@\/[^"']*)["']/g;
 
   content = content.replace(aliasRegex, (match, importPath) => {
     const convertedPath = convertAlias(importPath, filePath);
@@ -75,7 +74,7 @@ function processFile(filePath: string) {
   });
 
   // Também corrige imports relativos sem extensão
-  const relativeRegex = /from\s+["'](\.\.?\/[^"']*)["']/g;
+  const relativeRegex = /from\s*["'](\.\.?\/[^"']*)["']/g;
   content = content.replace(relativeRegex, (match, importPath) => {
     if (!path.extname(importPath)) {
       const fullImportPath = path.resolve(path.dirname(filePath), importPath);
@@ -122,4 +121,4 @@ function walk(dir: string) {
 }
 
 walk(ROOT);
-console.log(chalk.green('✓ ') + 'Import fix completed');
+console.log(chalk.green('  ✓ ') + 'Import fix completed');

@@ -41,7 +41,7 @@ function convertAlias(importPath, filePath) {
 function processFile(filePath) {
     var content = fs.readFileSync(filePath, 'utf8');
     var changed = false;
-    var aliasRegex = /from\s+["'](@\/[^"']*)["']/g;
+    var aliasRegex = /from\s*["'](@\/[^"']*)["']/g;
     content = content.replace(aliasRegex, function (match, importPath) {
         var convertedPath = convertAlias(importPath, filePath);
         if (convertedPath !== importPath) {
@@ -58,7 +58,7 @@ function processFile(filePath) {
         return match;
     });
     // Também corrige imports relativos sem extensão
-    var relativeRegex = /from\s+["'](\.\.?\/[^"']*)["']/g;
+    var relativeRegex = /from\s*["'](\.\.?\/[^"']*)["']/g;
     content = content.replace(relativeRegex, function (match, importPath) {
         if (!path.extname(importPath)) {
             var fullImportPath = path.resolve(path.dirname(filePath), importPath);

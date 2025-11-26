@@ -2,7 +2,12 @@
 
 `fastay` is a command-line interface (CLI) tool for creating and managing modern backend projects with **Fastay.js** - a lightweight, TypeScript-first framework for building APIs quickly and predictably.
 
-> **Get Started with Fastay**: [npm package](https://www.npmjs.com/package/@syntay/fastay)
+<div align="center">
+
+**📦 Get Started**: [@syntay/fastay on npm](https://www.npmjs.com/package/@syntay/fastay) • 
+**🐙 Source Code**: [GitHub Repository](https://github.com/syntay-team/fastay)
+
+</div>
 
 ---
 
@@ -74,13 +79,7 @@ fastay start
 
 Contributions are welcome!
 
-1. Fork the project.
-2. Create a branch (`git checkout -b my-feature`).
-3. Commit your changes (`git commit -am 'Add new feature'`).
-4. Push to the branch (`git push origin my-feature`).
-5. Open a Pull Request.
-
----
+--
 
 ## 🔹 License
 
@@ -88,33 +87,4 @@ MIT © Syntay Team
 
 ---
 
-## Alternative Version with Badges
 
-```markdown
-# 🚀 Fastay CLI
-
-`fastay` is a command-line interface (CLI) tool for creating and managing modern backend projects with **Fastay.js**.
-
-<div align="center">
-
-**📦 Get Started**: [@syntay/fastay on npm](https://www.npmjs.com/package/@syntay/fastay) • 
-**🐙 Source Code**: [GitHub Repository](https://github.com/syntay-team/fastay)
-
-</div>
-
----
-
-## 🔹 Installation
-```
-
-## Alternative Version with Strong Call-to-Action
-
-```markdown
-# 🚀 Fastay CLI
-
-`fastay` is a command-line interface (CLI) tool for creating and managing modern backend projects with **[Fastay.js](https://www.npmjs.com/package/@syntay/fastay)** - a lightweight, TypeScript-first framework for building APIs quickly and predictably.
-
-> **🎯 Quick Start**: Install the core package: `npm install @syntay/fastay`
-
----
-```

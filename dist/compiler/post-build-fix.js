@@ -1,4 +1,3 @@
-// compiler/post-build-fix.ts
 import fs from 'node:fs';
 import path from 'node:path';
 import chalk from 'chalk';
@@ -97,4 +96,4 @@ function walk(dir) {
     }
 }
 walk(ROOT);
-console.log(chalk.green('✓ ') + 'Import fix completed');
+console.log(chalk.green('  ✓ ') + 'Import fix completed');

@@ -1,14 +1,14 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import chalk from 'chalk';
+import fs from "node:fs";
+import path from "node:path";
+import chalk from "chalk";
 
 const ROOT = process.argv[2];
 if (!ROOT) {
-  console.log(chalk.red('✗ No dist path provided to post-build-fix'));
+  console.log(chalk.red("✗ No dist path provided to post-build-fix"));
   process.exit(1);
 }
 
-console.log(chalk.blue('🔧') + chalk.gray(` `) + 'Running import fix...');
+console.log(chalk.blue("🔧") + chalk.gray(` `) + "Running import fix...");
 
 /**
  * Calcula quantos níveis precisamos voltar para chegar na raiz do dist
@@ -17,11 +17,11 @@ function calculateRelativeDepth(filePath: string): string {
   const relativePath = path.relative(ROOT, path.dirname(filePath));
   const depth = relativePath.split(path.sep).length;
 
-  if (depth === 0) return './';
+  if (depth === 0) return "./";
 
-  let relativePrefix = '';
+  let relativePrefix = "";
   for (let i = 0; i < depth; i++) {
-    relativePrefix += '../';
+    relativePrefix += "../";
   }
 
   return relativePrefix;
@@ -31,12 +31,12 @@ function calculateRelativeDepth(filePath: string): string {
  * Converte alias @/ para caminho relativo CORRETO baseado na profundidade
  */
 function convertAlias(importPath: string, filePath: string): string {
-  if (importPath.startsWith('@/')) {
+  if (importPath.startsWith("@/")) {
     const withoutAlias = importPath.slice(2); // Remove '@/'
     const relativePrefix = calculateRelativeDepth(filePath);
 
     // Para imports de arquivos (como lib/auth/profissional)
-    if (withoutAlias.endsWith('.js') || withoutAlias.includes('/')) {
+    if (withoutAlias.endsWith(".js") || withoutAlias.includes("/")) {
       return `${relativePrefix}${withoutAlias}`;
     }
 
@@ -48,7 +48,7 @@ function convertAlias(importPath: string, filePath: string): string {
 }
 
 function processFile(filePath: string) {
-  let content = fs.readFileSync(filePath, 'utf8');
+  let content = fs.readFileSync(filePath, "utf8");
   let changed = false;
 
   const aliasRegex = /from\s*["'](@\/[^"']*)["']/g;
@@ -60,11 +60,11 @@ function processFile(filePath: string) {
       changed = true;
       const relativeFile = path.relative(ROOT, filePath);
       console.log(
-        '  ' +
-          chalk.magenta('↳') +
+        "  " +
+          chalk.magenta("↳") +
           chalk.gray(` ${relativeFile}: `) +
           chalk.red(importPath) +
-          ' → ' +
+          " → " +
           chalk.green(convertedPath)
       );
       return `from "${convertedPath}"`;
@@ -75,25 +75,31 @@ function processFile(filePath: string) {
 
   // Também corrige imports relativos sem extensão
   const relativeRegex = /from\s*["'](\.\.?\/[^"']*)["']/g;
-  content = content.replace(relativeRegex, (match, importPath) => {
-    if (!path.extname(importPath)) {
-      const fullImportPath = path.resolve(path.dirname(filePath), importPath);
 
-      // Verifica se é arquivo .js
-      if (fs.existsSync(fullImportPath + '.js')) {
+  content = content.replace(relativeRegex, (match, importPath) => {
+    const fullImportPath = path.resolve(path.dirname(filePath), importPath);
+
+    // 1️⃣ JSON → adicionar import assertion
+    if (importPath.endsWith(".json")) {
+      changed = true;
+      return `from "${importPath}" with { type: "json" }`;
+    }
+
+    // 2️⃣ JS sem extensão
+    if (!path.extname(importPath)) {
+      if (fs.existsSync(fullImportPath + ".js")) {
         changed = true;
         return `from "${importPath}.js"`;
       }
 
-      // Verifica se é diretório com index.js
+      // 3️⃣ Diretório com index.js
       if (
         fs.existsSync(fullImportPath) &&
-        fs.statSync(fullImportPath).isDirectory()
+        fs.statSync(fullImportPath).isDirectory() &&
+        fs.existsSync(path.join(fullImportPath, "index.js"))
       ) {
-        if (fs.existsSync(path.join(fullImportPath, 'index.js'))) {
-          changed = true;
-          return `from "${path.join(importPath, 'index.js')}"`;
-        }
+        changed = true;
+        return `from "${path.join(importPath, "index.js")}"`;
       }
     }
 
@@ -101,7 +107,7 @@ function processFile(filePath: string) {
   });
 
   if (changed) {
-    fs.writeFileSync(filePath, content, 'utf8');
+    fs.writeFileSync(filePath, content, "utf8");
   }
 }
 
@@ -114,11 +120,11 @@ function walk(dir: string) {
 
     if (stat.isDirectory()) {
       walk(fullPath);
-    } else if (file.endsWith('.js')) {
+    } else if (file.endsWith(".js")) {
       processFile(fullPath);
     }
   }
 }
 
 walk(ROOT);
-console.log(chalk.green('  ✓ ') + 'Import fix completed');
+console.log(chalk.green("  ✓ ") + "Import fix completed");
